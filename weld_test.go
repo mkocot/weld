@@ -1,4 +1,4 @@
-package merger
+package weld
 
 import (
 	"reflect"
@@ -16,7 +16,7 @@ func Test_merge(t *testing.T) {
 		Normal int
 		Anno   int
 		Beno   int
-		Ceno   []*booya `merger:""`
+		Ceno   []*booya `weld:""`
 		Deno   *booya
 	}
 
@@ -41,7 +41,7 @@ func Test_merge(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Merge(tt.args.a, tt.args.b)
+			got, err := Weld(tt.args.a, tt.args.b)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("merge() error = %v, wantErr %v", err, tt.wantErr)
 				return

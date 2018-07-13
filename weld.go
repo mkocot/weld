@@ -1,4 +1,4 @@
-package merger
+package weld
 
 import (
 	"errors"
@@ -7,13 +7,13 @@ import (
 )
 
 var (
-	// ErrUnmergable returned when two objects are unmergable
-	ErrUnmergable = errors.New("Unmergable")
+	// ErrUnweldable returned when two objects are unmergable
+	ErrUnweldable = errors.New("Unweldable")
 )
 
 const (
 	defaultZeroAsEmpty bool = false
-	lookupTag               = "merger"
+	lookupTag               = "weld"
 )
 
 func mergeTag(a interface{}, b interface{}) {
@@ -24,7 +24,7 @@ func mergeTag(a interface{}, b interface{}) {
 	}
 	for i := 0; i < mirrora.NumField(); i++ {
 		f := mirrora.Field(i)
-		t, ok := f.Tag.Lookup("merger")
+		t, ok := f.Tag.Lookup(lookupTag)
 		if !ok {
 			continue
 		}
@@ -32,13 +32,13 @@ func mergeTag(a interface{}, b interface{}) {
 	}
 }
 
-// Merge given arguments
+// Weld together given arguments
 // Treating 0 as literal value! To change this, mark fields as "zero-as-empty"
 // Arguments are read-only
-// tag: merger
+// tag: weld
 // options:
 // * zero-as-empty - treat empty (default) values as unset, and keep previous.
-func Merge(a, b interface{}) (interface{}, error) {
+func Weld(a, b interface{}) (interface{}, error) {
 	v, err := merge(reflect.ValueOf(a), reflect.ValueOf(b), defaultZeroAsEmpty)
 	if err != nil {
 		return nil, err
@@ -51,14 +51,14 @@ func merge(atype, btype reflect.Value, zeroAsEmpty bool) (out reflect.Value, err
 	// using inplace replace. This is by design.
 
 	//if atype.Kind() != reflect.Ptr {
-	//	return reflect.Value{}, ErrUnmergable
+	//	return reflect.Value{}, ErrUnweldable
 	//}
 
 	if atype.IsValid() && btype.IsValid() && atype.Type() != btype.Type() {
-		return reflect.Value{}, ErrUnmergable
+		return reflect.Value{}, ErrUnweldable
 	}
 	//if atype.Kind() == reflect.Ptr && atype.Elem().Kind() == reflect.Map {
-	//	return reflect.Value{}, ErrUnmergable
+	//	return reflect.Value{}, ErrUnweldable
 	//}
 	if atype.Kind() == reflect.Ptr {
 		// If we do unwrap then pack again
